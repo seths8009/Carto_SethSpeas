@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>Exploring the Incidents of the Bermuda Triangle</title>
+
+<style>
+
+/* Page background */
+body{
+    background-color:#13162B;
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Main page container */
+#pagediv{
+    margin:auto;
+    width:80%;
+    background-color:lightgrey;
+}
+
+/* Header */
+#headerdiv{
+    background-color:#2F3769;
+    padding:20px;
+}
+
+#headerdiv h1{
+    color:white;
+    text-align:center;
+    font-family:Verdana;
+    margin:0;
+}
+
+/* Content section */
+#contentdiv{
+    padding:15px 25px 25px 25px;
+}
+
+h2{
+    font-family:Tahoma;
+}
+
+h3{
+    font-family:Tahoma;
+}
+
+p{
+    text-align:justify;
+    font-weight:500;
+}
+
+/* Map container */
+#mapdiv{
+    position:relative;
+    margin:10px;
+    background-color:darkgrey;
+    padding:10px;
+}
+
+/* Legend styling */
+#legend{
+    position:absolute;
+    bottom:40px;
+    left:40px;
+    background:white;
+    padding:12px 15px;
+    border-radius:6px;
+    box-shadow:0px 2px 6px rgba(0,0,0,0.35);
+    font-size:13px;
+    width:190px;
+}
+
+#legend h4{
+    margin:0 0 8px 0;
+    font-size:14px;
+}
+
+.legend-item{
+    display:flex;
+    align-items:center;
+    margin-bottom:6px;
+}
+
+.legend-symbol{
+    width:12px;
+    height:12px;
+    margin-right:8px;
+}
+
+/* Casualty gradient legend */
+
+.casualty-gradient{
+    width:100%;
+    height:14px;
+    border-radius:4px;
+    margin-top:6px;
+    background: linear-gradient(
+        to right,
+        hsl(241, 60%, 30%),
+        hsl(213, 94%, 44%),
+        hsl(199, 98%, 49%),
+        hsl(54, 94%, 57%),
+        hsl(42, 93%, 50%),
+        hsl(0, 95%, 50%)
+    );
+}
+
+.gradient-labels{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    margin-top:4px;
+}
+
+/* Map iframe */
+iframe{
+    width:100%;
+    height:600px;
+    border:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="headerdiv">
+<h1>Exploring the Incidents of the Bermuda Triangle</h1>
+</div>
+
+<div id="pagediv">
+
+<div id="contentdiv">
+
+<h2>Map Content</h2>
+
+<p>
+The dataset used for this map contains <b>444 recorded incidents</b> within the Bermuda Triangle region.
+Each event represents a verified occurrence where ships or aircraft were reported lost or experienced unusual circumstances.
+</p>
+<p>
+This interactive map allows users to explore the spatial distribution and severity of these incidents.
+
+</div>
+
+<div id="mapdiv">
+
+<iframe 
+src="https://api.mapbox.com/styles/v1/sspeas/cmm2cpm89002701sugiwu9sd6.html?title=false&access_token=pk.eyJ1Ijoic3NwZWFzIiwiYSI6ImNtbTE5czlhbzA2c3Yyd29xNmVrM2h1emYifQ.9YLlbl-bkS9iUe13QR4Oqw&zoomwheel=false#5/25/-71"
+title="Bermuda Triangle Map">
+</iframe>
+
+<div id="legend">
+
+<h4>Map Legend</h4>
+
+<div class="legend-item">
+<span style="margin-right:8px; font-size:16px;">✈︎</span>
+Air Incidents
+</div>
+
+<div class="legend-item">
+<span class="legend-symbol" style="background:#2F3769; border-radius:50%;"></span>
+Sea Incidents
+</div>
+
+<hr>
+
+<h4 style="margin-top:6px;">Casualties</h4>
+
+<div class="casualty-gradient"></div>
+
+<div class="gradient-labels">
+<span>0</span>
+<span>2</span>
+<span>4</span>
+<span>6</span>
+<span>8</span>
+<span>10+</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
