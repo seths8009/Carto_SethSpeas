@@ -194,10 +194,15 @@
 
             map.setPaintProperty("denver_tree_point", 'fill-color', [
                         'interpolate',
-                        ['linear'],
+                        ['exponential', 2],
                         ['get', genus_selected],
-                        0, "white",
-                        genus_s_max, '#081D58',
+                        0, "light grey",
+                        100, '#9BE7FF',
+                        250, '#00BCD4',
+                        400, '#5E35B1',
+                        550, '#8E24AA',
+                        650, '#D81B60',
+                        720, '#F527EB',
                     ]);
         })
 
