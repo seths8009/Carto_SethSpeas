@@ -1,13 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AEL of California's Counties</title>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="utf-8" />
+<title>AEL of California's Counties</title>
+
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
+
+<style>
+	body { margin: 0; padding: 0; }
+	#map1 { position: absolute; top: 0; bottom: 0; width: 100%; };
+
+	    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --bg: #0f1117;
@@ -22,7 +26,7 @@
       --font: 'DM Sans', system-ui, sans-serif;
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
     html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); }
     body { display: flex; flex-direction: column; }
@@ -32,69 +36,16 @@
       display: flex; align-items: center; justify-content: space-between;
       border-bottom: 1px solid var(--border); background: var(--surface);
     }
-    .logo { display: flex; align-items: center; gap: 9px; }
+        .logo { display: flex; align-items: center; gap: 9px; }
     .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
     .logo h1 { font-size: 14px; font-weight: 500; letter-spacing: 0.04em; }
     .header-right { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
 
-    .tab-bar {
-      flex-shrink: 0; height: 44px;
-      display: flex; align-items: stretch;
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      padding: 0 1.5rem; gap: 2px;
-    }
-    .tab {
-      position: relative; display: flex; align-items: center; gap: 8px;
-      padding: 0 16px; font-size: 12px; font-weight: 500; color: var(--text-muted);
-      cursor: pointer; border: none; background: transparent;
-      letter-spacing: 0.02em; transition: color 0.15s;
-      white-space: nowrap; font-family: var(--font);
-    }
-    .tab:hover { color: var(--text); }
-    .tab.active { color: var(--text); }
-    .tab.active::after {
-      content: ''; position: absolute; bottom: 0; left: 16px; right: 16px;
-      height: 2px; background: var(--accent); border-radius: 2px 2px 0 0;
-    }
-    .tab-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .tab-badge {
-      font-size: 10px; font-family: 'DM Mono', monospace; color: var(--text-muted);
-      padding: 2px 6px; border-radius: 4px;
-      border: 1px solid var(--border); background: var(--surface2);
-    }
-    .tab.active .tab-badge {
-      background: var(--accent-dim); border-color: rgba(79,142,247,0.3); color: var(--accent);
-    }
-
     .main { flex: 1; display: flex; overflow: hidden; }
 
     .viewport { flex: 1; position: relative; overflow: hidden; }
-    .map-panel { position: absolute; inset: 0; display: none; }
-    .map-panel.active { display: block; }
+        .map-panel { position: absolute; inset: 0; }
     .map-container { width: 100%; height: 100%; }
-
-    .placeholder-inner {
-      width: 100%; height: 100%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 14px; background: var(--surface);
-    }
-    .placeholder-icon {
-      width: 52px; height: 52px; border-radius: 50%;
-      border: 1.5px dashed var(--border-hover);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .placeholder-icon svg { opacity: 0.25; }
-    .placeholder-text { font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.6; }
-    .placeholder-text strong { display: block; font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
-    .add-btn {
-      padding: 8px 20px; font-size: 12px; font-weight: 500; font-family: var(--font);
-      border: 1px solid var(--border-hover); background: transparent; color: var(--text);
-      border-radius: 8px; cursor: pointer;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
-      letter-spacing: 0.02em; margin-top: 4px;
-    }
-    .add-btn:hover { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
-
     .map-label {
       position: absolute; top: 14px; left: 14px; z-index: 10;
       background: rgba(15,17,23,0.82); border: 1px solid var(--border-hover);
@@ -104,8 +55,6 @@
     .map-label .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
     .map-label .lbl { font-size: 12px; font-weight: 500; }
     .map-label .sub { font-size: 10px; color: var(--text-muted); font-family: 'DM Mono', monospace; margin-top: 1px; }
-
-    /* ── Sidebar ── */
     .sidebar {
       width: 0; flex-shrink: 0; overflow: hidden;
       background: var(--surface); border-left: 1px solid var(--border);
@@ -146,242 +95,52 @@
     }
     .empty-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
 
-    .map-container { cursor: default; }
-
     footer {
       flex-shrink: 0; height: 36px; padding: 0 1.5rem;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center;
       border-top: 1px solid var(--border); background: var(--surface);
     }
     .footer-hint { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
-    .kbd { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
-    .kbd span { background: var(--surface2); border: 1px solid var(--border-hover); border-radius: 4px; padding: 1px 5px; }
 
     .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
     .mapboxgl-ctrl-group { background: rgba(15,17,23,0.85) !important; border: 1px solid var(--border-hover) !important; border-radius: 8px !important; overflow: hidden; }
     .mapboxgl-ctrl-group button { background-color: transparent !important; }
     .mapboxgl-ctrl-group button .mapboxgl-ctrl-icon { filter: invert(1) brightness(0.8); }
 
-    /* ── Description bubble ── */
-    .desc-bubble {
-      position: absolute; bottom: 18px; right: 18px; z-index: 20;
-      width: 38px; height: 38px; border-radius: 50%;
-      background: var(--surface); border: 1px solid var(--border-hover);
-      color: var(--text-muted); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-    }
-    .desc-bubble:hover { background: var(--surface2); border-color: var(--accent); color: var(--accent); transform: scale(1.08); }
-    .desc-bubble.has-desc { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
-    /* ── Description modal ── */
-    .desc-overlay {
-      display: none; position: absolute; inset: 0; z-index: 30;
-      background: rgba(10,12,18,0.6);
-      align-items: flex-end; justify-content: center; padding-bottom: 70px;
-    }
-    .desc-overlay.open { display: flex; }
-    .desc-card {
-      width: 420px; max-width: calc(100% - 2rem);
-      background: var(--surface); border: 1px solid var(--border-hover);
-      border-radius: 14px; padding: 1.25rem;
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .desc-card-header { display: flex; align-items: center; justify-content: space-between; }
-    .desc-card-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
-    .desc-card-close {
-      width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border);
-      background: transparent; color: var(--text-muted); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; transition: background 0.15s, color 0.15s; font-family: var(--font);
-    }
-    .desc-card-close:hover { background: var(--surface2); color: var(--text); }
-    .desc-textarea {
-      width: 100%; height: 100px; background: var(--surface2);
-      border: 1px solid var(--border-hover); border-radius: 8px;
-      color: var(--text); font-family: var(--font); font-size: 13px;
-      line-height: 1.6; padding: 10px 12px; resize: none; outline: none;
-      transition: border-color 0.15s;
-    }
-    .desc-textarea:focus { border-color: var(--accent); }
-    .desc-textarea::placeholder { color: var(--text-muted); }
-    .desc-save {
-      align-self: flex-end; padding: 7px 20px; font-size: 12px; font-weight: 500;
-      font-family: var(--font); border: 1px solid var(--accent);
-      background: var(--accent-dim); color: var(--accent);
-      border-radius: 8px; cursor: pointer; transition: background 0.15s; letter-spacing: 0.02em;
-    }
-    .desc-save:hover { background: rgba(79,142,247,0.22); }
 
-    /* ── Description display badge ── */
-    .desc-display {
-      position: absolute; bottom: 18px; left: 14px; z-index: 10;
-      max-width: 260px; background: rgba(15,17,23,0.82);
-      border: 1px solid var(--border-hover); border-radius: 8px;
-      padding: 8px 12px; font-size: 12px; color: var(--text-muted);
-      line-height: 1.5; pointer-events: none; display: none;
-    }
-    .desc-display.visible { display: block; }
-  </style>
+
+
+
+</style>
 </head>
+
+
+
 <body>
 
 <header>
   <div class="logo">
     <div class="logo-dot"></div>
-    <h1>Map Dashboard</h1>
+    <h1>Annual Earthquake Loss</h1>
   </div>
   <span class="header-right">Mapbox GL JS v3.3</span>
 </header>
 
-<nav class="tab-bar">
-  <button class="tab active" data-panel="1" onclick="switchTab(1)">
-    <div class="tab-dot" style="background:#4f8ef7"></div>
-    Map 1 <span class="tab-badge">live</span>
-  </button>
-  <button class="tab" data-panel="2" onclick="switchTab(2)">
-    <div class="tab-dot" style="background:var(--border-hover)"></div>
-    Map 2 <span class="tab-badge">empty</span>
-  </button>
-  <button class="tab" data-panel="3" onclick="switchTab(3)">
-    <div class="tab-dot" style="background:var(--border-hover)"></div>
-    Map 3 <span class="tab-badge">empty</span>
-  </button>
-  <button class="tab" data-panel="4" onclick="switchTab(4)">
-    <div class="tab-dot" style="background:var(--border-hover)"></div>
-    Map 4 <span class="tab-badge">empty</span>
-  </button>
-</nav>
-
 <div class="main">
   <div class="viewport">
-
-    <!-- Panel 1 -->
-    <div class="map-panel active" id="panel-1">
+    <div class="map-panel" id="panel-1">
       <div class="map-container" id="map1"></div>
       <div class="map-label">
         <div class="dot"></div>
         <div>
-          <div class="lbl">Map 1</div>
+          <div class="lbl">Calirfornia</div>
           <div class="sub">Earthquake Loss · Counties</div>
         </div>
       </div>
-      <button class="desc-bubble" id="descBtn-1" onclick="openDesc(1)" title="Add description">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-        </svg>
-      </button>
-      <div class="desc-overlay" id="descOverlay-1">
-        <div class="desc-card">
-          <div class="desc-card-header">
-            <span class="desc-card-title">Map 1 — Description</span>
-            <button class="desc-card-close" onclick="closeDesc(1)">✕</button>
-          </div>
-          <textarea class="desc-textarea" id="descText-1" placeholder="Add a description for this map…"></textarea>
-          <button class="desc-save" onclick="saveDesc(1)">Save</button>
-        </div>
-      </div>
-      <div class="desc-display" id="descDisplay-1"></div>
     </div>
-
-    <!-- Panel 2 -->
-    <div class="map-panel" id="panel-2">
-      <div class="placeholder-inner">
-        <div class="placeholder-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            <circle cx="12" cy="9" r="2.5"/>
-          </svg>
-        </div>
-        <div class="placeholder-text"><strong>Map 2</strong>Ready for your map</div>
-        <button class="add-btn">+ Add Map</button>
-      </div>
-      <button class="desc-bubble" id="descBtn-2" onclick="openDesc(2)" title="Add description">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-        </svg>
-      </button>
-      <div class="desc-overlay" id="descOverlay-2">
-        <div class="desc-card">
-          <div class="desc-card-header">
-            <span class="desc-card-title">Map 2 — Description</span>
-            <button class="desc-card-close" onclick="closeDesc(2)">✕</button>
-          </div>
-          <textarea class="desc-textarea" id="descText-2" placeholder="Add a description for this map…"></textarea>
-          <button class="desc-save" onclick="saveDesc(2)">Save</button>
-        </div>
-      </div>
-      <div class="desc-display" id="descDisplay-2"></div>
-    </div>
-
-    <!-- Panel 3 -->
-    <div class="map-panel" id="panel-3">
-      <div class="placeholder-inner">
-        <div class="placeholder-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            <circle cx="12" cy="9" r="2.5"/>
-          </svg>
-        </div>
-        <div class="placeholder-text"><strong>Map 3</strong>Ready for your map</div>
-        <button class="add-btn">+ Add Map</button>
-      </div>
-      <button class="desc-bubble" id="descBtn-3" onclick="openDesc(3)" title="Add description">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-        </svg>
-      </button>
-      <div class="desc-overlay" id="descOverlay-3">
-        <div class="desc-card">
-          <div class="desc-card-header">
-            <span class="desc-card-title">Map 3 — Description</span>
-            <button class="desc-card-close" onclick="closeDesc(3)">✕</button>
-          </div>
-          <textarea class="desc-textarea" id="descText-3" placeholder="Add a description for this map…"></textarea>
-          <button class="desc-save" onclick="saveDesc(3)">Save</button>
-        </div>
-      </div>
-      <div class="desc-display" id="descDisplay-3"></div>
-    </div>
-
-    <!-- Panel 4 -->
-    <div class="map-panel" id="panel-4">
-      <div class="placeholder-inner">
-        <div class="placeholder-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            <circle cx="12" cy="9" r="2.5"/>
-          </svg>
-        </div>
-        <div class="placeholder-text"><strong>Map 4</strong>Ready for your map</div>
-        <button class="add-btn">+ Add Map</button>
-      </div>
-      <button class="desc-bubble" id="descBtn-4" onclick="openDesc(4)" title="Add description">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-        </svg>
-      </button>
-      <div class="desc-overlay" id="descOverlay-4">
-        <div class="desc-card">
-          <div class="desc-card-header">
-            <span class="desc-card-title">Map 4 — Description</span>
-            <button class="desc-card-close" onclick="closeDesc(4)">✕</button>
-          </div>
-          <textarea class="desc-textarea" id="descText-4" placeholder="Add a description for this map…"></textarea>
-          <button class="desc-save" onclick="saveDesc(4)">Save</button>
-        </div>
-      </div>
-      <div class="desc-display" id="descDisplay-4"></div>
-    </div>
-
   </div>
 
-  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-inner">
       <div class="sidebar-header">
@@ -403,29 +162,29 @@
   </aside>
 </div>
 
+
 <footer>
   <span class="footer-hint">click a county to inspect · drag to pan · scroll to zoom</span>
-  <div class="kbd"><span>←</span><span>→</span>&nbsp; switch maps</div>
 </footer>
 
+
 <script>
-  mapboxgl.accessToken = 'pk.eyJ1Ijoic3NwZWFzIiwiYSI6ImNtbTE5czlhbzA2c3Yyd29xNmVrM2h1emYifQ.9YLlbl-bkS9iUe13QR4Oqw';
+	mapboxgl.accessToken = 'pk.eyJ1Ijoic3NwZWFzIiwiYSI6ImNtbTE5czlhbzA2c3Yyd29xNmVrM2h1emYifQ.9YLlbl-bkS9iUe13QR4Oqw';                     //Mapbox Accesstoken
 
-  const TILESET_ID   = 'sspeas.2jnp2uv4';
-  const SOURCE_LAYER = 'Annualized_Earthquake_Loss_AE-c5s6bc';
-  const PROP_NAME    = 'CountyName';
-  const PROP_AEL     = 'AEL';
-  const AEL_MAX      = 2600000000;
+	const TILESET_ID   = 'sspeas.2jnp2uv4';
+	const SOURCE_LAYER = 'Annualized_Earthquake_Loss_AE-c5s6bc';
+	const PROP_NAME    = 'CountyName';
+	const PROP_AEL     = 'AEL';
+	const AEL_MAX      = 2600000000;
 
-  const map1 = new mapboxgl.Map({
-    container: 'map1',
-    style: 'mapbox://styles/sspeas/cmoizgjxz009y01r4742r0j7a',
-    center: [-98.5, 39.5],
-    zoom: 3.5,
-    attributionControl: false
-  });
+	var map1 = new mapboxgl.Map({
+		container: 'map1', // container id
+		style: 'mapbox://styles/sspeas/cmokifghm000101ss7de5dwos', // stylesheet URL, the style that you've created
+		center: [-119, 37], // starting position [lng, lat]
+		zoom: 5.5 // starting zoom
+	});
 
-  map1.addControl(new mapboxgl.NavigationControl(), 'top-right');
+	map1.addControl(new mapboxgl.NavigationControl(), 'top-right');
   map1.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
   map1.on('load', () => {
@@ -492,58 +251,6 @@
     }
   }
 
-  // ── Description system ──
-  const descriptions = { 1: '', 2: '', 3: '', 4: '' };
-
-  function openDesc(n) {
-    document.getElementById('descOverlay-' + n).classList.add('open');
-    document.getElementById('descText-' + n).value = descriptions[n];
-    setTimeout(() => document.getElementById('descText-' + n).focus(), 50);
-  }
-
-  function closeDesc(n) {
-    document.getElementById('descOverlay-' + n).classList.remove('open');
-  }
-
-  function saveDesc(n) {
-    const text    = document.getElementById('descText-' + n).value.trim();
-    descriptions[n] = text;
-    const display = document.getElementById('descDisplay-' + n);
-    const btn     = document.getElementById('descBtn-' + n);
-    if (text) {
-      display.textContent = text;
-      display.classList.add('visible');
-      btn.classList.add('has-desc');
-    } else {
-      display.textContent = '';
-      display.classList.remove('visible');
-      btn.classList.remove('has-desc');
-    }
-    closeDesc(n);
-  }
-
-  document.querySelectorAll('.desc-overlay').forEach(overlay => {
-    overlay.addEventListener('click', e => {
-      if (e.target === overlay) closeDesc(overlay.id.replace('descOverlay-', ''));
-    });
-  });
-
-  // ── Tab switching ──
-  let current = 1;
-
-  function switchTab(n) {
-    document.querySelectorAll('.map-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('panel-' + n).classList.add('active');
-    document.querySelector('[data-panel="' + n + '"]').classList.add('active');
-    current = n;
-    if (n === 1) map1.resize();
-  }
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight') switchTab(current < 4 ? current + 1 : 1);
-    if (e.key === 'ArrowLeft')  switchTab(current > 1 ? current - 1 : 4);
-  });
 </script>
 
 </body>
