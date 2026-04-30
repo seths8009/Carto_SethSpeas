@@ -15,3 +15,5 @@ https://seths8009.github.io/Carto_SethSpeas/Ex14 Remake.html
 https://seths8009.github.io/Carto_SethSpeas/Ex16 Remake.html
 
 https://seths8009.github.io/Carto_SethSpeas/SSpeas Final Proj Map.html
+
+https://seths8009.github.io/Carto_SethSpeas/Seth_map_revise.html
