@@ -1,0 +1,257 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<title>AEL of California's Counties</title>
+
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
+
+<style>
+	body { margin: 0; padding: 0; }
+	#map1 { position: absolute; top: 0; bottom: 0; width: 100%; };
+
+	    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #181c27;
+      --surface2: #1f2435;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.18);
+      --text: #f0f2f8;
+      --text-muted: #7a7f96;
+      --accent: #4f8ef7;
+      --accent-dim: rgba(79,142,247,0.12);
+      --font: 'DM Sans', system-ui, sans-serif;
+    }
+
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+    html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); }
+    body { display: flex; flex-direction: column; }
+
+    header {
+      flex-shrink: 0; height: 52px; padding: 0 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border); background: var(--surface);
+    }
+        .logo { display: flex; align-items: center; gap: 9px; }
+    .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+    .logo h1 { font-size: 14px; font-weight: 500; letter-spacing: 0.04em; }
+    .header-right { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+
+    .main { flex: 1; display: flex; overflow: hidden; }
+
+    .viewport { flex: 1; position: relative; overflow: hidden; }
+        .map-panel { position: absolute; inset: 0; }
+    .map-container { width: 100%; height: 100%; }
+    .map-label {
+      position: absolute; top: 14px; left: 14px; z-index: 10;
+      background: rgba(15,17,23,0.82); border: 1px solid var(--border-hover);
+      border-radius: 8px; padding: 8px 14px;
+      display: flex; align-items: center; gap: 8px; pointer-events: none;
+    }
+    .map-label .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+    .map-label .lbl { font-size: 12px; font-weight: 500; }
+    .map-label .sub { font-size: 10px; color: var(--text-muted); font-family: 'DM Mono', monospace; margin-top: 1px; }
+    .sidebar {
+      width: 0; flex-shrink: 0; overflow: hidden;
+      background: var(--surface); border-left: 1px solid var(--border);
+      transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex; flex-direction: column;
+    }
+    .sidebar.open { width: 300px; }
+    .sidebar-inner { width: 300px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+    .sidebar-header {
+      padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+    .sidebar-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .sidebar-close {
+      width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; line-height: 1; transition: background 0.15s, color 0.15s; font-family: var(--font);
+    }
+    .sidebar-close:hover { background: var(--surface2); color: var(--text); }
+    .sidebar-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+    .county-name { font-size: 18px; font-weight: 500; color: var(--text); line-height: 1.3; }
+    .divider { height: 1px; background: var(--border); }
+    .stat-block { display: flex; flex-direction: column; gap: 4px; }
+    .stat-label { font-size: 10px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); }
+    .stat-value { font-size: 28px; font-weight: 500; color: var(--text); font-family: 'DM Mono', monospace; letter-spacing: -0.02em; }
+    .stat-unit { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .ael-bar-wrap { margin-top: 6px; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+    .ael-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+    .empty-state {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 10px; padding: 2rem; text-align: center;
+    }
+    .empty-icon {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 1.5px dashed var(--border-hover);
+      display: flex; align-items: center; justify-content: center; opacity: 0.5;
+    }
+    .empty-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+    footer {
+      flex-shrink: 0; height: 36px; padding: 0 1.5rem;
+      display: flex; align-items: center;
+      border-top: 1px solid var(--border); background: var(--surface);
+    }
+    .footer-hint { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+
+    .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
+    .mapboxgl-ctrl-group { background: rgba(15,17,23,0.85) !important; border: 1px solid var(--border-hover) !important; border-radius: 8px !important; overflow: hidden; }
+    .mapboxgl-ctrl-group button { background-color: transparent !important; }
+    .mapboxgl-ctrl-group button .mapboxgl-ctrl-icon { filter: invert(1) brightness(0.8); }
+
+
+
+
+
+
+</style>
+</head>
+
+
+
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <h1>Annual Earthquake Loss</h1>
+  </div>
+  <span class="header-right">Mapbox GL JS v3.3</span>
+</header>
+
+<div class="main">
+  <div class="viewport">
+    <div class="map-panel" id="panel-1">
+      <div class="map-container" id="map1"></div>
+      <div class="map-label">
+        <div class="dot"></div>
+        <div>
+          <div class="lbl">Calirfornia</div>
+          <div class="sub">Earthquake Loss · Counties</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-inner">
+      <div class="sidebar-header">
+        <span class="sidebar-title">County Info</span>
+        <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+      </div>
+      <div class="sidebar-body" id="sidebarBody">
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+              <circle cx="12" cy="9" r="2.5"/>
+            </svg>
+          </div>
+          <p class="empty-text">Click any county on the map to view its details</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+
+<footer>
+  <span class="footer-hint">click a county to inspect · drag to pan · scroll to zoom</span>
+</footer>
+
+
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1Ijoic3NwZWFzIiwiYSI6ImNtbTE5czlhbzA2c3Yyd29xNmVrM2h1emYifQ.9YLlbl-bkS9iUe13QR4Oqw';                     //Mapbox Accesstoken
+
+	const TILESET_ID   = 'sspeas.2jnp2uv4';
+	const SOURCE_LAYER = 'Annualized_Earthquake_Loss_AE-c5s6bc';
+	const PROP_NAME    = 'CountyName';
+	const PROP_AEL     = 'AEL';
+	const AEL_MAX      = 2600000000;
+
+	var map1 = new mapboxgl.Map({
+		container: 'map1', // container id
+		style: 'mapbox://styles/sspeas/cmokifghm000101ss7de5dwos', // stylesheet URL, the style that you've created
+		center: [-119, 37], // starting position [lng, lat]
+		zoom: 5.5 // starting zoom
+	});
+
+	map1.addControl(new mapboxgl.NavigationControl(), 'top-right');
+  map1.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+
+  map1.on('load', () => {
+    const styleLayers = map1.getStyle().layers;
+    const polyLayers  = styleLayers.filter(l => l['source-layer'] === SOURCE_LAYER);
+
+    if (!map1.getSource('counties-hl-source')) {
+      map1.addSource('counties-hl-source', { type: 'vector', url: 'mapbox://' + TILESET_ID });
+    }
+
+    map1.addLayer({
+      id: 'counties-highlight', type: 'fill',
+      source: 'counties-hl-source', 'source-layer': SOURCE_LAYER,
+      paint: { 'fill-color': '#4f8ef7', 'fill-opacity': 0.4 },
+      filter: ['==', ['get', PROP_NAME], '']
+    });
+
+    map1.addLayer({
+      id: 'counties-highlight-outline', type: 'line',
+      source: 'counties-hl-source', 'source-layer': SOURCE_LAYER,
+      paint: { 'line-color': '#4f8ef7', 'line-width': 2.5 },
+      filter: ['==', ['get', PROP_NAME], '']
+    });
+
+    const clickLayerId = polyLayers[0]?.id;
+    if (!clickLayerId) { console.warn('No matching layer found'); return; }
+
+    map1.on('mouseenter', clickLayerId, () => { map1.getCanvas().style.cursor = 'pointer'; });
+    map1.on('mouseleave', clickLayerId, () => { map1.getCanvas().style.cursor = ''; });
+
+    map1.on('click', clickLayerId, (e) => {
+      const props = e.features[0].properties;
+      const name  = props[PROP_NAME] || 'Unknown County';
+      const ael   = props[PROP_AEL] ?? null;
+      openSidebar(name, ael);
+      map1.setFilter('counties-highlight',         ['==', ['get', PROP_NAME], name]);
+      map1.setFilter('counties-highlight-outline', ['==', ['get', PROP_NAME], name]);
+    });
+  });
+
+  function openSidebar(name, ael) {
+    document.getElementById('sidebar').classList.add('open');
+    const aelFormatted = (ael !== null && ael !== undefined)
+      ? '$' + Number(ael).toLocaleString('en-US', { maximumFractionDigits: 0 })
+      : 'No data';
+    const barPct = (ael !== null && ael !== undefined)
+      ? Math.min(100, (Number(ael) / AEL_MAX) * 100).toFixed(1) : 0;
+    document.getElementById('sidebarBody').innerHTML = `
+      <p class="county-name">${name}</p>
+      <div class="divider"></div>
+      <div class="stat-block">
+        <span class="stat-label">Annualized Earthquake Loss</span>
+        <span class="stat-value">${aelFormatted}</span>
+        <span class="stat-unit">estimated annual loss (USD)</span>
+        <div class="ael-bar-wrap"><div class="ael-bar" style="width:${barPct}%"></div></div>
+      </div>`;
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    if (map1.getLayer('counties-highlight')) {
+      map1.setFilter('counties-highlight',         ['==', ['get', PROP_NAME], '']);
+      map1.setFilter('counties-highlight-outline', ['==', ['get', PROP_NAME], '']);
+    }
+  }
+
+</script>
+
+</body>
+</html>
